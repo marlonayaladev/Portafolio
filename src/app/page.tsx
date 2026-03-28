@@ -114,9 +114,7 @@ const projects: ProjectDetail[] = [
     fullDescription: "specialización activa en el diseño de arquitecturas escalables y servicios de Inteligencia Artificial sobre nubes híbridas. El enfoque actual se centra en la migración de microservicios y la implementación de modelos de aprendizaje automático para la optimización de procesos operativos.",
     impact: "Desarrollo de entornos de prueba con auto-escalado y alta disponibilidad, integrando servicios de cómputo elástico para garantizar un SLA (Acuerdo de Nivel de Servicio) del 99.9% en aplicaciones críticas.",
     keywords: "Cloud Computing · AWS Ecosystem · Huawei Cloud · AI Integration · Infrastructure as Code · DevOps Pipeline..",
-    buttons: [
-      { label: "View presentation", type: "primary" }
-    ],
+  
     images: ["/cert.svg"],
     viewLink: "Más Detalles",
   },
