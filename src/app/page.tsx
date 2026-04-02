@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Icon Components
 const MetaIcon = () => (
@@ -35,7 +35,7 @@ const WhatsAppIcon = () => (
 const InstagramIcon = () => (
 <div className="w-10 h-10 rounded-[20px] bg-[#1a1a1a] flex items-center justify-center overflow-hidden border border-white/5 shadow-inner">
     <img 
-      src="/awshuawei.svg" // Asegúrate de que el nombre coincida con el archivo en /public
+      src="/certificado.jpg" // Asegúrate de que el nombre coincida con el archivo en /public
       alt="Vet" 
       className="w-17 h-17 object-contain p-21" // Ajustamos a w-7 para que el logo destaque más que el favicon
     />
@@ -115,7 +115,7 @@ const projects: ProjectDetail[] = [
     impact: "Desarrollo de entornos de prueba con auto-escalado y alta disponibilidad, integrando servicios de cómputo elástico para garantizar un SLA (Acuerdo de Nivel de Servicio) del 99.9% en aplicaciones críticas.",
     keywords: "Cloud Computing · AWS Ecosystem · Huawei Cloud · AI Integration · Infrastructure as Code · DevOps Pipeline..",
   
-    images: ["/cert.svg"],
+    images: ["/certificado.jpg"],
     viewLink: "Más Detalles",
   },
 ];
@@ -200,12 +200,38 @@ const getSocialIcon = (id: string) => {
 export default function Home() {
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [activeSoonProject, setActiveSoonProject] = useState<string | null>(null);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [fastLoadMode] = useState(true); // Modo de carga rápida activado por defecto
+
+  const prefetchImage = (src?: string) => {
+    if (!src) return;
+    const img = new Image();
+    img.src = src;
+  };
 
   const openModal = (projectId: string) => {
     const project = projects.find((p) => p.id === projectId);
     if (project && project.viewLink) {
       setActiveModal(projectId);
       setCurrentImageIndex(0);
+      setIsImageLoaded(false);
+
+      if (fastLoadMode && project.images?.length) {
+        project.images.forEach((src) => prefetchImage(src));
+      }
+    }
+  };
+
+  const handleProjectClick = (project: ProjectDetail) => {
+    if (project.viewLink) {
+      openModal(project.id);
+      return;
+    }
+
+    if (project.isConfidential) {
+      setActiveSoonProject(project.id);
+      setTimeout(() => setActiveSoonProject(null), 1000);
     }
   };
 
@@ -217,9 +243,20 @@ export default function Home() {
   const activeProject = projects.find((p) => p.id === activeModal);
   const totalImages = activeProject?.images?.length || 0;
 
+  useEffect(() => {
+    setIsImageLoaded(false);
+
+    if (!fastLoadMode || !activeProject?.images) return;
+
+    prefetchImage(activeProject.images[currentImageIndex]);
+    prefetchImage(activeProject.images[currentImageIndex + 1]);
+    prefetchImage(activeProject.images[currentImageIndex - 1]);
+  }, [activeProject, currentImageIndex, fastLoadMode]);
+
   const goToPreviousImage = () => {
     if (currentImageIndex > 0) {
       setCurrentImageIndex(currentImageIndex - 1);
+      setIsImageLoaded(false);
     }
   };
 
@@ -280,8 +317,8 @@ export default function Home() {
                 <article
                   key={project.id}
                   className="project-card"
-                  onClick={() => openModal(project.id)}
-                  style={{ cursor: project.viewLink ? "pointer" : "default" }}
+                  onClick={() => handleProjectClick(project)}
+                  style={{ cursor: project.viewLink ? "pointer" : "pointer" }}
                 >
                   <div className="card-glass-bg" />
                   <div className="card-content rounded-[25px] xl:my-[0px] xl:py-[8px]">
@@ -300,7 +337,9 @@ export default function Home() {
                       {project.viewLink ? (
                         <span className="view-link">{project.viewLink} ↗</span>
                       ) : (
-                        <p className="view-link note">Próximamente · Confidencial</p>
+                        <p className={`view-link note ${project.id === activeSoonProject ? "coming-soon-highlight" : ""}`}>
+                          Próximamente · Confidencial
+                        </p>
                       )}
                     </div>
                   </div>
@@ -416,7 +455,7 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={goToPreviousImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all hover:scale-110 z-10"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white border border-white/20 transition-all hover:scale-110 z-10"
                       aria-label="Imagen anterior"
                     >
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -429,13 +468,16 @@ export default function Home() {
                     <video
                       src={currentMedia}
                       controls
-                      className="max-h-[500px] w-auto object-contain drop-shadow-2xl rounded-3xl"
+                      onCanPlay={() => setIsImageLoaded(true)}
+                      className={`max-h-[500px] w-auto object-contain drop-shadow-2xl rounded-3xl transition-all duration-500 ease-out ${isImageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
                     />
                   ) : (
                     <img
                       src={currentMedia}
                       alt={`${activeProject.title} - Media ${currentImageIndex + 1}`}
-                      className="max-h-[500px] w-auto object-contain drop-shadow-2xl rounded-3xl"
+                      loading="eager"
+                      onLoad={() => setIsImageLoaded(true)}
+                      className={`max-h-[500px] w-auto object-contain drop-shadow-2xl rounded-3xl transition-all duration-500 ease-out ${isImageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
                     />
                   )}
 
@@ -444,7 +486,7 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={goToNextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all hover:scale-110 z-10"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white border border-white/20 transition-all hover:scale-110 z-10"
                       aria-label="Imagen siguiente"
                     >
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

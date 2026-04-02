@@ -242,7 +242,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.3s ease;
 }
 
 .project-card:hover .view-link {
@@ -251,7 +251,36 @@ body {
 
 .view-link.note {
   color: var(--text-muted);
+  font-weight: 500;
 }
+
+.coming-soon-highlight {
+  color: #ffffff !important;
+  font-weight: 700;
+  transform-origin: center;
+  animation: bounce-strong 0.8s ease;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.55);
+}
+
+@keyframes bounce-strong {
+  0%, 100% { transform: translateY(0);} 
+  20% { transform: translateY(-4px);} 
+  40% { transform: translateY(2px);} 
+  60% { transform: translateY(-2px);} 
+  80% { transform: translateY(1px);} 
+}
+
+.carousel-media {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+.carousel-media.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
 
 /* Hero Image Floating Animation */
 .hero-image-container {
