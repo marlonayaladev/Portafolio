@@ -35,7 +35,7 @@ const WhatsAppIcon = () => (
 const InstagramIcon = () => (
 <div className="w-10 h-10 rounded-[20px] bg-[#1a1a1a] flex items-center justify-center overflow-hidden border border-white/5 shadow-inner">
     <img 
-      src="/certificado.jpg" // Asegúrate de que el nombre coincida con el archivo en /public
+      src="/awshuawei.svg" // Asegúrate de que el nombre coincida con el archivo en /public
       alt="Vet" 
       className="w-17 h-17 object-contain p-21" // Ajustamos a w-7 para que el logo destaque más que el favicon
     />
